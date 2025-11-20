@@ -4,8 +4,10 @@ import com.perfumeria.auth.domain.exception.CampoObligatorioException;
 import com.perfumeria.auth.domain.exception.CredencialesInvalidasException;
 import com.perfumeria.auth.domain.exception.EmailDuplicadoException;
 import com.perfumeria.auth.domain.exception.UsuarioNoEncontradoException;
+import com.perfumeria.auth.domain.model.Notificacion;
 import com.perfumeria.auth.domain.model.Usuario;
 import com.perfumeria.auth.domain.model.gateway.EncrypterGateway;
+import com.perfumeria.auth.domain.model.gateway.NotificationGateway;
 import com.perfumeria.auth.domain.model.gateway.UsuarioGateway;
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +18,7 @@ public class UsuarioUseCase {
 
     private final UsuarioGateway usuarioGateway;
     private final EncrypterGateway encrypterGateway;
+    private final NotificationGateway notificationGateway;
 
     public Usuario guardarUsuario(Usuario usuario) {
         if (usuario.getNombre() == null || usuario.getPassword() == null) {
@@ -87,9 +90,18 @@ public class UsuarioUseCase {
 
         String passwordEncrypt = encrypterGateway.encrypt(usuario.getPassword());
         usuario.setPassword(passwordEncrypt);
-        Usuario usuarioActualizado = usuarioGateway.actualizarUsuario(usuario);
+        Usuario usuarioGuardado = usuarioGateway.guardarUsuario(usuario);
 
-        return usuarioActualizado;
+        Notificacion mensajeNotificacion = Notificacion.builder()
+                .tipo("Registro Usuario")
+                .email(usuarioGuardado.getEmail())
+                .numeroTelefono(usuarioGuardado.getNumeroTelefono())
+                .mensaje("Usuario registrado con exito")
+                .build();
+
+        notificationGateway.enviarMensaje(mensajeNotificacion);
+
+        return usuarioGuardado;
     }
 
 
