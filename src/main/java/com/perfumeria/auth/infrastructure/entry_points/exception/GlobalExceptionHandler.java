@@ -21,14 +21,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailDuplicadoException.class)
     public ResponseEntity<ResponseDTO> handleEmailDuplicado(EmailDuplicadoException ex) {
-        ResponseDTO response = new ResponseDTO(LocalDateTime.now(), HttpStatus.OK.value(), ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        ResponseDTO response = new ResponseDTO(LocalDateTime.now(), HttpStatus.CONFLICT.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(UsuarioNoEncontradoException.class)
     public ResponseEntity<ResponseDTO> handleUsuarioNoEncontrado(UsuarioNoEncontradoException ex) {
-        ResponseDTO response = new ResponseDTO(LocalDateTime.now(), HttpStatus.OK.value(), ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        ResponseDTO response = new ResponseDTO(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(CampoObligatorioException.class)
