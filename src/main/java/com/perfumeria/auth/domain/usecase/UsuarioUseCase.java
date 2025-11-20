@@ -4,10 +4,8 @@ import com.perfumeria.auth.domain.exception.CampoObligatorioException;
 import com.perfumeria.auth.domain.exception.CredencialesInvalidasException;
 import com.perfumeria.auth.domain.exception.EmailDuplicadoException;
 import com.perfumeria.auth.domain.exception.UsuarioNoEncontradoException;
-import com.perfumeria.auth.domain.model.Notificacion;
 import com.perfumeria.auth.domain.model.Usuario;
 import com.perfumeria.auth.domain.model.gateway.EncrypterGateway;
-import com.perfumeria.auth.domain.model.gateway.NotificationGateway;
 import com.perfumeria.auth.domain.model.gateway.UsuarioGateway;
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +16,6 @@ public class UsuarioUseCase {
 
     private final UsuarioGateway usuarioGateway;
     private final EncrypterGateway encrypterGateway;
-    private final NotificationGateway notificationGateway;
 
     public Usuario guardarUsuario(Usuario usuario) {
         if (usuario.getNombre() == null || usuario.getPassword() == null) {
@@ -38,14 +35,6 @@ public class UsuarioUseCase {
         usuario.setPassword(passwordEncrypt);
         Usuario usuarioGuardado = usuarioGateway.guardarUsuario(usuario);
 
-        Notificacion mensajeNotificacion = Notificacion.builder()
-                .tipo("Registro Usuario")
-                .email(usuarioGuardado.getEmail())
-                .numeroTelefono(usuarioGuardado.getNumeroTelefono())
-                .mensaje("Usuario registrado con exito")
-                .build();
-
-        notificationGateway.enviarMensaje(mensajeNotificacion);
 
         return usuarioGuardado;
     }
@@ -100,15 +89,6 @@ public class UsuarioUseCase {
         usuario.setPassword(passwordEncrypt);
         Usuario usuarioActualizado = usuarioGateway.actualizarUsuario(usuario);
 
-        Notificacion mensajeNotificacion = Notificacion.builder()
-                .tipo("Actualizacion Usuario")
-                .email(usuarioActualizado.getEmail())
-                .numeroTelefono(usuarioActualizado.getNumeroTelefono())
-                .mensaje("Usuario actualizado con exito")
-                .build();
-
-        notificationGateway.enviarMensaje(mensajeNotificacion);
-
         return usuarioActualizado;
     }
 
@@ -119,14 +99,6 @@ public class UsuarioUseCase {
             throw new UsuarioNoEncontradoException("No se puede eliminar. Usuario no encontrado con ID: " + id_usuario);
         }
         usuarioGateway.eliminarUsuario(id_usuario);
-        Notificacion mensajeNotificacion = Notificacion.builder()
-                .tipo("Eliminacion Usuario")
-                .email(usuario.getEmail())
-                .numeroTelefono(usuario.getNumeroTelefono())
-                .mensaje("Usuario eliminado con exito")
-                .build();
-
-        notificationGateway.enviarMensaje(mensajeNotificacion);
     }
 
     public Usuario iniciarSesionYDevolverUsuario(String email, String password) {
