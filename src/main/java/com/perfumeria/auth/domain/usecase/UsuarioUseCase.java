@@ -39,6 +39,16 @@ public class UsuarioUseCase {
         Usuario usuarioGuardado = usuarioGateway.guardarUsuario(usuario);
 
 
+        Notificacion mensajeNotificacion = Notificacion.builder()
+                .tipo("Registro Usuario")
+                .email(usuarioGuardado.getEmail())
+                .numeroTelefono(usuarioGuardado.getNumeroTelefono())
+                .mensaje("Usuario registrado con exito")
+                .build();
+
+        notificationGateway.enviarMensaje(mensajeNotificacion);
+
+
         return usuarioGuardado;
     }
 
@@ -91,15 +101,6 @@ public class UsuarioUseCase {
         String passwordEncrypt = encrypterGateway.encrypt(usuario.getPassword());
         usuario.setPassword(passwordEncrypt);
         Usuario usuarioGuardado = usuarioGateway.guardarUsuario(usuario);
-
-        Notificacion mensajeNotificacion = Notificacion.builder()
-                .tipo("Registro Usuario")
-                .email(usuarioGuardado.getEmail())
-                .numeroTelefono(usuarioGuardado.getNumeroTelefono())
-                .mensaje("Usuario registrado con exito")
-                .build();
-
-        notificationGateway.enviarMensaje(mensajeNotificacion);
 
         return usuarioGuardado;
     }
